@@ -1,0 +1,148 @@
+.memory-fragments {
+  padding: 2rem;
+}
+
+.memory-stats {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.stat-item {
+  background: rgba(15, 52, 96, 0.3);
+  border: 2px solid #0f3460;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.stat-label {
+  color: #a8b2d1;
+  font-size: 1.1rem;
+}
+
+.stat-value {
+  color: #e94560;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto 2rem;
+}
+
+.memory-card {
+  aspect-ratio: 3/4;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.memory-card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #0f3460;
+  transition: all 0.3s;
+}
+
+.card-front {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.card-back {
+  background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 100%);
+  transform: rotateY(180deg);
+}
+
+.memory-card:hover .card-front {
+  border-color: #e94560;
+  box-shadow: 0 0 20px rgba(233, 69, 96, 0.3);
+}
+
+.memory-card.matched .card-back {
+  background: linear-gradient(135deg, #2ed573 0%, #26a65b 100%);
+  border-color: #2ed573;
+  box-shadow: 0 0 25px rgba(46, 213, 115, 0.5);
+}
+
+.card-pattern {
+  font-size: 3rem;
+  color: #e94560;
+  text-shadow: 0 0 15px rgba(233, 69, 96, 0.6);
+  font-weight: bold;
+}
+
+.card-icon {
+  font-size: 3rem;
+  color: #fff;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.memory-card.matched .card-icon {
+  animation: match-pulse 0.5s ease-out;
+}
+
+@keyframes match-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.completion-message {
+  text-align: center;
+  padding: 1.5rem;
+  background: rgba(46, 213, 115, 0.1);
+  border: 2px solid #2ed573;
+  border-radius: 8px;
+  color: #2ed573;
+  font-size: 1.2rem;
+  font-weight: bold;
+  animation: slide-up 0.5s ease-out;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 1rem;
+  }
+  
+  .card-pattern,
+  .card-icon {
+    font-size: 2.5rem;
+  }
+}

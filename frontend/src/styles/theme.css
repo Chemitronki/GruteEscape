@@ -1,0 +1,305 @@
+/* Lovecraftian Dark Theme - Global Styles */
+
+:root {
+  /* Color Palette */
+  --color-void-black: #0a0a0f;
+  --color-deep-purple: #1a0f2e;
+  --color-eldritch-purple: #8b5cf6;
+  --color-cosmic-blue: #3b82f6;
+  --color-blood-red: #dc2626;
+  --color-toxic-green: #10b981;
+  --color-ancient-gold: #fbbf24;
+  --color-fog-gray: #9ca3af;
+  --color-pale-text: #e5e7eb;
+  
+  /* Shadows and Glows */
+  --glow-purple: 0 0 20px rgba(139, 92, 246, 0.5);
+  --glow-red: 0 0 20px rgba(220, 38, 38, 0.5);
+  --glow-green: 0 0 20px rgba(16, 185, 129, 0.5);
+  --shadow-deep: 0 10px 40px rgba(0, 0, 0, 0.8);
+  --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.6);
+  
+  /* Animations */
+  --transition-smooth: all 0.3s ease;
+  --transition-slow: all 0.6s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, var(--color-void-black) 0%, var(--color-deep-purple) 100%);
+  color: var(--color-pale-text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Cave Environment Background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(ellipse at 20% 30%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(220, 38, 38, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(10, 10, 15, 0.9) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: -1;
+  animation: pulseBackground 10s ease-in-out infinite;
+}
+
+/* Fog Overlay Effect */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    linear-gradient(180deg, transparent 0%, rgba(10, 10, 15, 0.3) 50%, transparent 100%),
+    linear-gradient(90deg, transparent 0%, rgba(10, 10, 15, 0.2) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: -1;
+  animation: fogDrift 20s linear infinite;
+  opacity: 0.5;
+}
+
+@keyframes pulseBackground {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes fogDrift {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(-10px) translateY(10px);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+/* Particle Effects Container */
+.particles-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 50%;
+  animation: float 15s infinite ease-in-out;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(50px);
+    opacity: 0;
+  }
+}
+
+/* Global Button Styles */
+button {
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  border: none;
+  outline: none;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.2);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Global Input Styles */
+input, textarea, select {
+  background: rgba(30, 30, 45, 0.8);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: var(--color-pale-text);
+  padding: 0.75rem;
+  border-radius: 6px;
+  transition: var(--transition-smooth);
+  font-family: inherit;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--color-eldritch-purple);
+  box-shadow: var(--glow-purple);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--color-fog-gray);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(10, 10, 15, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.5);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.7);
+}
+
+/* Loading Animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  border: 3px solid rgba(139, 92, 246, 0.2);
+  border-top-color: var(--color-eldritch-purple);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+/* Glitch Effect for Titles */
+@keyframes glitch {
+  0% {
+    text-shadow: 
+      2px 2px 0 rgba(220, 38, 38, 0.5),
+      -2px -2px 0 rgba(59, 130, 246, 0.5);
+  }
+  25% {
+    text-shadow: 
+      -2px 2px 0 rgba(220, 38, 38, 0.5),
+      2px -2px 0 rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    text-shadow: 
+      2px -2px 0 rgba(220, 38, 38, 0.5),
+      -2px 2px 0 rgba(59, 130, 246, 0.5);
+  }
+  75% {
+    text-shadow: 
+      -2px -2px 0 rgba(220, 38, 38, 0.5),
+      2px 2px 0 rgba(59, 130, 246, 0.5);
+  }
+  100% {
+    text-shadow: 
+      2px 2px 0 rgba(220, 38, 38, 0.5),
+      -2px -2px 0 rgba(59, 130, 246, 0.5);
+  }
+}
+
+.glitch-text {
+  animation: glitch 3s infinite;
+}
+
+/* Pulse Animation for Important Elements */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.pulse-element {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Slide In Animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.5s ease-out;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 13px;
+  }
+}

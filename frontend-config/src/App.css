@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global styles */
+body {
+  margin: 0;
+  font-family: 'Crimson Text', serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #0f172a;
+  color: #f0f4f8;
+}
+
+/* Lovecraftian atmosphere */
+.lovecraft-bg {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  background-attachment: fixed;
+}
+
+.cosmic-glow {
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.5),
+               0 0 20px rgba(139, 92, 246, 0.3),
+               0 0 30px rgba(139, 92, 246, 0.2);
+}
+
+.eldritch-shadow {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5),
+              0 2px 4px -1px rgba(0, 0, 0, 0.3),
+              0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+/* Button styles */
+.btn-primary {
+  @apply bg-cosmic-600 hover:bg-cosmic-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 eldritch-shadow;
+}
+
+.btn-secondary {
+  @apply bg-eldritch-700 hover:bg-eldritch-600 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300;
+}
+
+.btn-danger {
+  @apply bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300;
+}
+
+/* Input styles */
+.input-field {
+  @apply bg-abyss-800 border border-eldritch-700 text-eldritch-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cosmic-500 focus:border-transparent transition-all duration-300;
+}
+
+/* Card styles */
+.card {
+  @apply bg-abyss-800 rounded-lg p-6 eldritch-shadow;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes tentacle {
+  0%, 100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}

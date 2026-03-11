@@ -1,0 +1,248 @@
+/* Touch Device Optimizations */
+
+/* Minimum Touch Target Size (44x44px) */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Touch-friendly buttons */
+@media (max-width: 767px) {
+  button, .btn, a.button {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  /* Increase spacing between interactive elements */
+  .button-group button {
+    margin: 0.5rem;
+  }
+
+  /* Larger tap targets for icons */
+  .icon-button {
+    min-width: 48px;
+    min-height: 48px;
+    padding: 0.75rem;
+  }
+
+  /* Larger form inputs */
+  input, textarea, select {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 0.75rem;
+  }
+
+  /* Larger checkboxes and radio buttons */
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-width: 24px;
+    min-height: 24px;
+    cursor: pointer;
+  }
+}
+
+/* Touch Gestures Support */
+.draggable {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+
+.draggable:active {
+  cursor: grabbing;
+}
+
+/* Swipe Gesture Container */
+.swipeable {
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Prevent text selection during touch interactions */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Touch Feedback */
+.touch-feedback {
+  position: relative;
+  overflow: hidden;
+}
+
+.touch-feedback::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.touch-feedback:active::after {
+  width: 200px;
+  height: 200px;
+}
+
+/* Disable hover effects on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .hover-effect:hover {
+    transform: none;
+    filter: none;
+  }
+
+  /* Use active state instead */
+  .hover-effect:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+}
+
+/* Scrollable areas with momentum */
+.scrollable {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent double-tap zoom */
+.no-zoom {
+  touch-action: manipulation;
+}
+
+/* Touch-friendly puzzle controls */
+@media (max-width: 767px) {
+  .puzzle-control {
+    min-width: 50px;
+    min-height: 50px;
+    margin: 0.5rem;
+  }
+
+  .puzzle-grid-cell {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .puzzle-draggable-item {
+    min-width: 60px;
+    min-height: 60px;
+    touch-action: none;
+  }
+
+  /* Larger canvas drawing area */
+  .puzzle-canvas {
+    min-height: 300px;
+    touch-action: none;
+  }
+
+  /* Increase spacing in grids */
+  .puzzle-grid {
+    gap: 0.75rem;
+  }
+}
+
+/* Pinch Zoom Prevention (for game area) */
+.game-area {
+  touch-action: pan-x pan-y;
+}
+
+/* Touch-friendly navigation */
+@media (max-width: 767px) {
+  .nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .nav-item {
+    min-height: 48px;
+    padding: 1rem;
+    font-size: 1.1rem;
+  }
+}
+
+/* Touch-friendly modals */
+@media (max-width: 767px) {
+  .modal {
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-close-btn {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1.5rem;
+  }
+}
+
+/* Touch-friendly sliders */
+@media (max-width: 767px) {
+  input[type="range"] {
+    height: 44px;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (max-width: 767px) and (orientation: landscape) {
+  .app-container {
+    padding: 0.5rem;
+  }
+
+  .game-layout {
+    gap: 0.5rem;
+  }
+
+  .modal {
+    max-height: 95vh;
+  }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: env(safe-area-inset-top)) {
+  .app-container {
+    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+/* Prevent text size adjustment on orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Touch-friendly tooltips */
+@media (max-width: 767px) {
+  .tooltip {
+    font-size: 0.9rem;
+    padding: 0.75rem;
+    max-width: 90vw;
+  }
+}

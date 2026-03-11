@@ -1,0 +1,11 @@
+// Export all puzzle components for easy importing
+export { default as SymbolCipher } from './SymbolCipher';
+export { default as RitualPattern } from './RitualPattern';
+export { default as AncientLock } from './AncientLock';
+export { default as MemoryFragments } from './MemoryFragments';
+export { default as CosmicAlignment } from './CosmicAlignment';
+export { default as TentacleMaze } from './TentacleMaze';
+export { default as ForbiddenTome } from './ForbiddenTome';
+export { default as ShadowReflection } from './ShadowReflection';
+export { default as CultistCode } from './CultistCode';
+export { default as ElderSignDrawing } from './ElderSignDrawing';

@@ -1,0 +1,122 @@
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import './MemoryFragments.css';
+
+/**
+ * MemoryFragments - Memory matching puzzle with eldritch imagery
+ * Requirements: 3.1, 3.7
+ */
+const MemoryFragments = ({ puzzleData, onSubmit, disabled }) => {
+  const totalPairs = puzzleData?.data?.pairs || 6;
+  const cards = puzzleData?.data?.cards || [];
+  
+  const [flippedCards, setFlippedCards] = useState([]);
+  const [matchedPairs, setMatchedPairs] = useState([]);
+  const [isChecking, setIsChecking] = useState(false);
+
+  useEffect(() => {
+    if (flippedCards.length === 2) {
+      setIsChecking(true);
+      
+      const [first, second] = flippedCards;
+      const firstCard = cards[first];
+      const secondCard = cards[second];
+
+      if (firstCard.pairId === secondCard.pairId) {
+        // Match found
+        setTimeout(() => {
+          setMatchedPairs([...matchedPairs, firstCard.pairId]);
+          setFlippedCards([]);
+          setIsChecking(false);
+        }, 800);
+      } else {
+        // No match
+        setTimeout(() => {
+          setFlippedCards([]);
+          setIsChecking(false);
+        }, 1200);
+      }
+    }
+  }, [flippedCards, cards, matchedPairs]);
+
+  useEffect(() => {
+    // Auto-submit when all pairs are matched
+    if (matchedPairs.length === totalPairs && matchedPairs.length > 0) {
+      setTimeout(() => {
+        onSubmit({ completed_pairs: totalPairs });
+      }, 500);
+    }
+  }, [matchedPairs, totalPairs, onSubmit]);
+
+  const handleCardClick = (index) => {
+    if (disabled || isChecking || flippedCards.length >= 2) return;
+    if (flippedCards.includes(index)) return;
+    if (matchedPairs.includes(cards[index].pairId)) return;
+
+    setFlippedCards([...flippedCards, index]);
+  };
+
+  const isCardFlipped = (index) => {
+    return flippedCards.includes(index) || matchedPairs.includes(cards[index].pairId);
+  };
+
+  const isCardMatched = (index) => {
+    return matchedPairs.includes(cards[index].pairId);
+  };
+
+  return (
+    <div className="memory-fragments">
+      <div className="memory-stats">
+        <div className="stat-item">
+          <span className="stat-label">Pares encontrados:</span>
+          <span className="stat-value">{matchedPairs.length} / {totalPairs}</span>
+        </div>
+      </div>
+
+      <div className="cards-grid">
+        {cards.map((card, index) => (
+          <div
+            key={index}
+            className={`memory-card ${isCardFlipped(index) ? 'flipped' : ''} ${
+              isCardMatched(index) ? 'matched' : ''
+            }`}
+            onClick={() => handleCardClick(index)}
+          >
+            <div className="card-inner">
+              <div className="card-front">
+                <div className="card-pattern">?</div>
+              </div>
+              <div className="card-back">
+                <div className="card-icon">{card.icon}</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {matchedPairs.length === totalPairs && (
+        <div className="completion-message">
+          ¡Todos los fragmentos de memoria han sido restaurados!
+        </div>
+      )}
+    </div>
+  );
+};
+
+MemoryFragments.propTypes = {
+  puzzleData: PropTypes.shape({
+    data: PropTypes.shape({
+      pairs: PropTypes.number,
+      cards: PropTypes.arrayOf(
+        PropTypes.shape({
+          pairId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+          icon: PropTypes.string.isRequired,
+        })
+      ),
+    }),
+  }).isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+};
+
+export default MemoryFragments;
