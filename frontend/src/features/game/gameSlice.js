@@ -3,34 +3,15 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
-// Get session from localStorage
-const getStoredSession = () => {
-  const session = localStorage.getItem('game_session');
-  return session ? JSON.parse(session) : null;
-};
-
-// Initial state
-const initialState = {
-  session: getStoredSession(),
-  timeRemaining: getStoredSession()?.time_remaining || 1500,
-  isActive: false,
-  loading: false,
-  error: null,
-  syncInterval: null,
-  currentPuzzle: null,
-  puzzleLoading: false,
-  puzzleError: null,
-  completedPuzzles: 0,
-  totalPuzzles: 10,
-};
+// Configure axios defaults
+axios.defaults.withCredentials = true;
 
 // Async thunks
 export const startGame = createAsyncThunk(
-  'game/start',
-  async (_, { getState, rejectWithValue }) => {
+  'game/startGame',
+  async (_, { rejectWithValue, getState }) => {
     try {
       const { token } = getState().auth;
-      
       const response = await axios.post(
         `${API_URL}/game/start`,
         {},
@@ -41,16 +22,13 @@ export const startGame = createAsyncThunk(
         }
       );
       
-      if (response.data.success) {
-        const session = response.data.data;
-        localStorage.setItem('game_session', JSON.stringify(session));
-        return session;
-      } else {
-        return rejectWithValue(response.data.message || 'Error al iniciar el juego');
-      }
+      const session = response.data.session;
+      localStorage.setItem('game_session', JSON.stringify(session));
+      
+      return session;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || 'Error de conexión al servidor'
+        error.response?.data?.message || 'Error al iniciar el juego'
       );
     }
   }
@@ -58,43 +36,11 @@ export const startGame = createAsyncThunk(
 
 export const getSession = createAsyncThunk(
   'game/getSession',
-  async (_, { getState, rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
       const { token } = getState().auth;
-      
-      const response = await axios.get(`${API_URL}/game/session`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      
-      if (response.data.success) {
-        const session = response.data.data;
-        localStorage.setItem('game_session', JSON.stringify(session));
-        return session;
-      } else {
-        return rejectWithValue(response.data.message || 'No hay sesión activa');
-      }
-    } catch (error) {
-      if (error.response?.status === 404) {
-        localStorage.removeItem('game_session');
-      }
-      return rejectWithValue(
-        error.response?.data?.message || 'Error al obtener la sesión'
-      );
-    }
-  }
-);
-
-export const syncTimer = createAsyncThunk(
-  'game/sync',
-  async (timeRemaining, { getState, rejectWithValue }) => {
-    try {
-      const { token } = getState().auth;
-      
-      const response = await axios.post(
-        `${API_URL}/game/sync`,
-        { time_remaining: timeRemaining },
+      const response = await axios.get(
+        `${API_URL}/game/session`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -102,30 +48,53 @@ export const syncTimer = createAsyncThunk(
         }
       );
       
-      if (response.data.success) {
-        const session = response.data.data;
-        localStorage.setItem('game_session', JSON.stringify(session));
-        return session;
-      } else {
-        return rejectWithValue(response.data.message || 'Error al sincronizar');
-      }
+      const session = response.data.session;
+      localStorage.setItem('game_session', JSON.stringify(session));
+      
+      return {
+        session,
+        timeRemaining: response.data.time_remaining
+      };
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || 'Error de conexión al servidor'
+        error.response?.data?.message || 'Error al obtener sesión'
+      );
+    }
+  }
+);
+
+export const syncSession = createAsyncThunk(
+  'game/syncSession',
+  async (_, { rejectWithValue, getState }) => {
+    try {
+      const { token } = getState().auth;
+      const response = await axios.post(
+        `${API_URL}/game/sync`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      return response.data.time_remaining;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Error al sincronizar'
       );
     }
   }
 );
 
 export const completeGame = createAsyncThunk(
-  'game/complete',
-  async (timeRemaining, { getState, rejectWithValue }) => {
+  'game/completeGame',
+  async (_, { rejectWithValue, getState }) => {
     try {
       const { token } = getState().auth;
-      
       const response = await axios.post(
         `${API_URL}/game/complete`,
-        { time_remaining: timeRemaining },
+        {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -133,27 +102,22 @@ export const completeGame = createAsyncThunk(
         }
       );
       
-      if (response.data.success) {
-        const session = response.data.data;
-        localStorage.setItem('game_session', JSON.stringify(session));
-        return session;
-      } else {
-        return rejectWithValue(response.data.message || 'Error al completar el juego');
-      }
+      localStorage.removeItem('game_session');
+      
+      return response.data.session;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || 'Error de conexión al servidor'
+        error.response?.data?.message || 'Error al completar el juego'
       );
     }
   }
 );
 
 export const abandonGame = createAsyncThunk(
-  'game/abandon',
-  async (_, { getState, rejectWithValue }) => {
+  'game/abandonGame',
+  async (_, { rejectWithValue, getState }) => {
     try {
       const { token } = getState().auth;
-      
       const response = await axios.post(
         `${API_URL}/game/abandon`,
         {},
@@ -164,15 +128,12 @@ export const abandonGame = createAsyncThunk(
         }
       );
       
-      if (response.data.success) {
-        localStorage.removeItem('game_session');
-        return response.data.data;
-      } else {
-        return rejectWithValue(response.data.message || 'Error al abandonar el juego');
-      }
+      localStorage.removeItem('game_session');
+      
+      return response.data.session;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || 'Error de conexión al servidor'
+        error.response?.data?.message || 'Error al abandonar el juego'
       );
     }
   }
@@ -180,12 +141,11 @@ export const abandonGame = createAsyncThunk(
 
 export const getCurrentPuzzle = createAsyncThunk(
   'game/getCurrentPuzzle',
-  async (sessionId, { getState, rejectWithValue }) => {
+  async (sessionId, { rejectWithValue, getState }) => {
     try {
       const { token } = getState().auth;
-      
       const response = await axios.get(
-        `${API_URL}/puzzles/${sessionId}`,
+        `${API_URL}/puzzles/${sessionId}/current`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -193,62 +153,113 @@ export const getCurrentPuzzle = createAsyncThunk(
         }
       );
       
-      if (response.data.success) {
-        return response.data.data;
-      } else {
-        return rejectWithValue(response.data.message || 'Error al obtener el puzzle');
-      }
+      return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || 'Error de conexión al servidor'
+        error.response?.data?.message || 'Error al obtener puzzle'
       );
     }
   }
 );
+
+export const submitPuzzleSolution = createAsyncThunk(
+  'game/submitPuzzleSolution',
+  async ({ puzzleId, solution, sessionId }, { rejectWithValue, getState }) => {
+    try {
+      const { token } = getState().auth;
+      const response = await axios.post(
+        `${API_URL}/puzzles/${puzzleId}/submit`,
+        {
+          solution,
+          session_id: sessionId
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Error al enviar solución'
+      );
+    }
+  }
+);
+
+export const getHint = createAsyncThunk(
+  'game/getHint',
+  async ({ puzzleId, level, sessionId }, { rejectWithValue, getState }) => {
+    try {
+      const { token } = getState().auth;
+      const response = await axios.get(
+        `${API_URL}/hints/puzzles/${puzzleId}/${level}?session_id=${sessionId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Error al obtener pista'
+      );
+    }
+  }
+);
+
+// Initial state
+const initialState = {
+  session: null,
+  timeRemaining: 1500,
+  isActive: false,
+  loading: false,
+  error: null,
+  currentPuzzle: null,
+  puzzleLoading: false,
+  completedPuzzles: 0,
+  totalPuzzles: 10,
+  hints: [],
+};
 
 // Slice
 const gameSlice = createSlice({
   name: 'game',
   initialState,
   reducers: {
-    decrementTimer: (state) => {
-      if (state.timeRemaining > 0 && state.isActive) {
-        state.timeRemaining -= 1;
-        
-        // Update session in state
-        if (state.session) {
-          state.session.time_remaining = state.timeRemaining;
-          localStorage.setItem('game_session', JSON.stringify(state.session));
-        }
-        
-        // Check for timeout
-        if (state.timeRemaining <= 0) {
-          state.isActive = false;
-          state.session.status = 'timeout';
-        }
+    recoverSession: (state) => {
+      const storedSession = localStorage.getItem('game_session');
+      if (storedSession) {
+        state.session = JSON.parse(storedSession);
+        state.isActive = true;
       }
     },
-    clearError: (state) => {
-      state.error = null;
+    updateTimeRemaining: (state, action) => {
+      state.timeRemaining = action.payload;
+    },
+    decrementTimer: (state) => {
+      if (state.timeRemaining > 0) {
+        state.timeRemaining -= 1;
+      }
+    },
+    syncTimer: (state, action) => {
+      state.timeRemaining = action.payload;
     },
     clearSession: (state) => {
       state.session = null;
       state.timeRemaining = 1500;
       state.isActive = false;
-      state.error = null;
       state.currentPuzzle = null;
-      state.puzzleLoading = false;
-      state.puzzleError = null;
       state.completedPuzzles = 0;
+      state.hints = [];
       localStorage.removeItem('game_session');
     },
-    recoverSession: (state) => {
-      const storedSession = getStoredSession();
-      if (storedSession && storedSession.status === 'active') {
-        state.session = storedSession;
-        state.timeRemaining = storedSession.time_remaining;
-        state.isActive = true;
-      }
+    clearError: (state) => {
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -261,9 +272,9 @@ const gameSlice = createSlice({
       .addCase(startGame.fulfilled, (state, action) => {
         state.loading = false;
         state.session = action.payload;
-        state.timeRemaining = action.payload.time_remaining;
-        state.isActive = action.payload.status === 'active';
-        state.error = null;
+        state.isActive = true;
+        state.timeRemaining = 1500;
+        state.completedPuzzles = 0;
       })
       .addCase(startGame.rejected, (state, action) => {
         state.loading = false;
@@ -278,43 +289,37 @@ const gameSlice = createSlice({
       })
       .addCase(getSession.fulfilled, (state, action) => {
         state.loading = false;
-        state.session = action.payload;
-        state.timeRemaining = action.payload.time_remaining;
-        state.isActive = action.payload.status === 'active';
-        state.error = null;
+        state.session = action.payload.session;
+        state.timeRemaining = action.payload.timeRemaining;
+        state.isActive = true;
       })
       .addCase(getSession.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        state.session = null;
         state.isActive = false;
       });
     
-    // Sync timer
+    // Sync session
     builder
-      .addCase(syncTimer.pending, (state) => {
-        // Don't set loading for sync to avoid UI flicker
+      .addCase(syncSession.pending, (state) => {
+        // No loading state for sync
       })
-      .addCase(syncTimer.fulfilled, (state, action) => {
-        state.session = action.payload;
-        state.timeRemaining = action.payload.time_remaining;
-        state.isActive = action.payload.status === 'active';
+      .addCase(syncSession.fulfilled, (state, action) => {
+        state.timeRemaining = action.payload;
       })
-      .addCase(syncTimer.rejected, (state, action) => {
-        state.error = action.payload;
+      .addCase(syncSession.rejected, (state) => {
+        // Silent fail for sync
       });
     
     // Complete game
     builder
       .addCase(completeGame.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(completeGame.fulfilled, (state, action) => {
         state.loading = false;
         state.session = action.payload;
         state.isActive = false;
-        state.error = null;
       })
       .addCase(completeGame.rejected, (state, action) => {
         state.loading = false;
@@ -325,14 +330,11 @@ const gameSlice = createSlice({
     builder
       .addCase(abandonGame.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
-      .addCase(abandonGame.fulfilled, (state) => {
+      .addCase(abandonGame.fulfilled, (state, action) => {
         state.loading = false;
-        state.session = null;
-        state.timeRemaining = 1500;
+        state.session = action.payload;
         state.isActive = false;
-        state.error = null;
       })
       .addCase(abandonGame.rejected, (state, action) => {
         state.loading = false;
@@ -343,26 +345,49 @@ const gameSlice = createSlice({
     builder
       .addCase(getCurrentPuzzle.pending, (state) => {
         state.puzzleLoading = true;
-        state.puzzleError = null;
+        state.error = null;
       })
       .addCase(getCurrentPuzzle.fulfilled, (state, action) => {
         state.puzzleLoading = false;
-        
-        if (action.payload.all_completed) {
-          state.currentPuzzle = null;
-          state.completedPuzzles = action.payload.total_puzzles;
-        } else {
-          state.currentPuzzle = action.payload.puzzle;
-          state.completedPuzzles = action.payload.completed_puzzles || 0;
-          state.totalPuzzles = action.payload.total_puzzles || 10;
-        }
+        state.currentPuzzle = action.payload.puzzle;
       })
       .addCase(getCurrentPuzzle.rejected, (state, action) => {
         state.puzzleLoading = false;
-        state.puzzleError = action.payload;
+        state.error = action.payload;
+      });
+    
+    // Submit puzzle solution
+    builder
+      .addCase(submitPuzzleSolution.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(submitPuzzleSolution.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload.correct) {
+          state.completedPuzzles += 1;
+        }
+      })
+      .addCase(submitPuzzleSolution.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+    
+    // Get hint
+    builder
+      .addCase(getHint.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getHint.fulfilled, (state, action) => {
+        state.loading = false;
+        state.hints.push(action.payload.hint);
+      })
+      .addCase(getHint.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { decrementTimer, clearError, clearSession, recoverSession } = gameSlice.actions;
+export const { recoverSession, updateTimeRemaining, decrementTimer, syncTimer, clearSession, clearError } = gameSlice.actions;
 export default gameSlice.reducer;

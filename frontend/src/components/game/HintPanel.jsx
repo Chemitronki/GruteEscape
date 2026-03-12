@@ -30,26 +30,34 @@ const HintPanel = ({ puzzleId, timeSpent, onHintUsed }) => {
 
     const checkAvailability = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('auth_token');
+        const sessionId = localStorage.getItem('game_session') ? JSON.parse(localStorage.getItem('game_session')).id : null;
+        
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/puzzles/${puzzleId}/hints/available`,
+          `${import.meta.env.VITE_API_URL}/hints/puzzles/${puzzleId}/available?session_id=${sessionId}`,
           {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
           }
         );
 
-        if (response.data.success) {
-          const availability = response.data.data;
-          const wasUnavailable = !hintAvailability.available;
-          
-          setHintAvailability(availability);
+        const availability = {
+          available: response.data.can_use_hint,
+          time_spent: response.data.time_spent,
+          hints_used: response.data.hints_used,
+          max_hints: 3,
+          next_hint_level: response.data.hints_used + 1,
+        };
+        
+        const wasUnavailable = !hintAvailability.available;
+        
+        setHintAvailability(availability);
 
-          // Show notification when hints become available for the first time
-          if (availability.available && wasUnavailable && availability.hints_used === 0) {
-            setShowNotification(true);
-            playHintAvailable();
-            setTimeout(() => setShowNotification(false), 5000);
-          }
+        // Show notification when hints become available for the first time
+        if (availability.available && wasUnavailable && availability.hints_used === 0) {
+          setShowNotification(true);
+          playHintAvailable();
+          setTimeout(() => setShowNotification(false), 5000);
         }
       } catch (err) {
         console.error('Error checking hint availability:', err);
@@ -71,31 +79,31 @@ const HintPanel = ({ puzzleId, timeSpent, onHintUsed }) => {
     setError(null);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
+      const sessionId = localStorage.getItem('game_session') ? JSON.parse(localStorage.getItem('game_session')).id : null;
       const level = hintAvailability.next_hint_level;
       
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/puzzles/${puzzleId}/hints/${level}`,
+        `${import.meta.env.VITE_API_URL}/hints/puzzles/${puzzleId}/${level}?session_id=${sessionId}`,
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
         }
       );
 
-      if (response.data.success) {
-        const hint = response.data.data;
-        setCurrentHint(hint);
-        setShowHintModal(true);
-        setHintAvailability(prev => ({
-          ...prev,
-          hints_used: hint.hints_used,
-          available: hint.hints_used < 3,
-          next_hint_level: hint.hints_used + 1,
-        }));
+      const hint = response.data.hint;
+      setCurrentHint(hint);
+      setShowHintModal(true);
+      setHintAvailability(prev => ({
+        ...prev,
+        hints_used: response.data.hints_used,
+        available: response.data.hints_used < 3,
+        next_hint_level: response.data.hints_used + 1,
+      }));
 
-        // Notify parent component
-        if (onHintUsed) {
-          onHintUsed(hint);
-        }
+      // Notify parent component
+      if (onHintUsed) {
+        onHintUsed(hint);
       }
     } catch (err) {
       console.error('Error requesting hint:', err);

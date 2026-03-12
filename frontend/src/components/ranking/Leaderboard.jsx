@@ -19,12 +19,12 @@ const Leaderboard = () => {
 
   const fetchRankings = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/ranking/top`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/ranking/top`, {
+        withCredentials: true,
+      });
       
-      if (response.data.success) {
-        setRankings(response.data.rankings);
-        setError(null);
-      }
+      setRankings(response.data.rankings || []);
+      setError(null);
     } catch (err) {
       setError('Error al cargar el ranking');
       console.error('Error fetching rankings:', err);

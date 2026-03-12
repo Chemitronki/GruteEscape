@@ -20,7 +20,7 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Validation failed',
+                'message' => 'Validación fallida',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -34,7 +34,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'User registered successfully',
+            'message' => 'Usuario registrado exitosamente',
             'user' => $user,
             'token' => $token,
             'token_type' => 'Bearer'
@@ -50,14 +50,14 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Validation failed',
+                'message' => 'Validación fallida',
                 'errors' => $validator->errors()
             ], 422);
         }
 
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
-                'message' => 'Invalid credentials'
+                'message' => 'Credenciales inválidas'
             ], 401);
         }
 
@@ -65,7 +65,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Login successful',
+            'message' => 'Inicio de sesión exitoso',
             'user' => $user,
             'token' => $token,
             'token_type' => 'Bearer'
@@ -77,7 +77,7 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Logged out successfully'
+            'message' => 'Sesión cerrada exitosamente'
         ]);
     }
 

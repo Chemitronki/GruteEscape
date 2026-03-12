@@ -23,13 +23,12 @@ const UserRank = () => {
   const fetchUserRank = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/ranking/user/${user.id}`
+        `${import.meta.env.VITE_API_URL}/ranking/user/${user.id}`,
+        { withCredentials: true }
       );
       
-      if (response.data.success) {
-        setUserRank(response.data.ranking);
-        setError(null);
-      }
+      setUserRank(response.data);
+      setError(null);
     } catch (err) {
       if (err.response?.status === 404) {
         setUserRank(null);

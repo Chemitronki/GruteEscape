@@ -16,17 +16,19 @@ const usePuzzleSubmit = (puzzleId, sessionId) => {
     setFeedback(null);
 
     try {
+      const token = localStorage.getItem('token');
       const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/api/puzzles/${puzzleId}/submit`,
+        `${import.meta.env.VITE_API_URL}/puzzles/${puzzleId}/submit`,
         {
           session_id: sessionId,
           solution: solution,
         },
         {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
+          withCredentials: true,
         }
       );
 

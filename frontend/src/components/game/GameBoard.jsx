@@ -217,6 +217,22 @@ const GameBoard = () => {
       
       <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black p-4">
         <div className="max-w-6xl mx-auto">
+          {/* Header with logout button */}
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold text-green-400 font-serif">Escape Room Lovecraftiano</h1>
+            <button
+              onClick={() => {
+                if (window.confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                  dispatch(logout());
+                  navigate('/login');
+                }
+              }}
+              className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 touch-target"
+            >
+              Cerrar Sesión
+            </button>
+          </div>
+
           {/* Header with timer and progress */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 fade-in">
             <Timer />

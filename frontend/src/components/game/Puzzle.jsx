@@ -25,11 +25,12 @@ import './Puzzle.css';
  * Puzzle - Main puzzle component that renders different puzzle types
  * Handles puzzle loading, submission, and feedback
  */
-const Puzzle = () => {
+const Puzzle = ({ puzzle, onComplete, disabled }) => {
   const dispatch = useDispatch();
   const { session, currentPuzzle, puzzleLoading, isActive } = useSelector((state) => state.game);
+  const puzzleToUse = puzzle || currentPuzzle;
   const { submitSolution, isSubmitting, feedback, clearFeedback } = usePuzzleSubmit(
-    currentPuzzle?.id,
+    puzzleToUse?.id,
     session?.id
   );
   
@@ -37,22 +38,26 @@ const Puzzle = () => {
 
   useEffect(() => {
     // Load current puzzle when component mounts or session changes
-    if (session?.id && isActive) {
+    if (session?.id && isActive && !puzzle) {
       dispatch(getCurrentPuzzle(session.id));
     }
-  }, [dispatch, session?.id, isActive]);
+  }, [dispatch, session?.id, isActive, puzzle]);
 
   useEffect(() => {
     // Reload puzzle when one is completed
     if (feedback?.puzzleCompleted && !feedback?.allCompleted) {
       const timer = setTimeout(() => {
-        dispatch(getCurrentPuzzle(session.id));
+        if (onComplete) {
+          onComplete();
+        } else {
+          dispatch(getCurrentPuzzle(session.id));
+        }
         clearFeedback();
       }, 2000);
       
       return () => clearTimeout(timer);
     }
-  }, [feedback, dispatch, session?.id, clearFeedback]);
+  }, [feedback, dispatch, session?.id, clearFeedback, onComplete]);
 
   const handleSubmit = async (solution) => {
     const result = await submitSolution(solution || localSolution);
@@ -77,12 +82,12 @@ const Puzzle = () => {
       'elder_sign_drawing': ElderSignDrawing,
     };
 
-    const PuzzleComponent = puzzleComponents[currentPuzzle.type];
+    const PuzzleComponent = puzzleComponents[puzzleToUse.type];
     
     if (PuzzleComponent) {
       return (
         <PuzzleComponent
-          puzzleData={currentPuzzle}
+          puzzleData={puzzleToUse}
           onSubmit={handleSubmit}
           disabled={isDisabled}
         />
@@ -92,7 +97,7 @@ const Puzzle = () => {
     // Fallback for unknown puzzle types
     return (
       <div className="puzzle-type-placeholder">
-        <p className="puzzle-type-label">Tipo: {currentPuzzle.type}</p>
+        <p className="puzzle-type-label">Tipo: {puzzleToUse.type}</p>
         <p className="puzzle-implementation-note">
           Tipo de puzzle no reconocido
         </p>
@@ -123,7 +128,7 @@ const Puzzle = () => {
     return <PuzzleLoading />;
   }
 
-  if (!currentPuzzle) {
+  if (!puzzleToUse) {
     return (
       <div className="no-puzzle">
         <p>No hay puzzle disponible</p>
@@ -131,7 +136,7 @@ const Puzzle = () => {
     );
   }
 
-  const isDisabled = !isActive || isSubmitting;
+  const isDisabled = disabled || !isActive || isSubmitting;
 
   const handleHintUsed = (hint) => {
     console.log('Hint used:', hint);
@@ -140,8 +145,8 @@ const Puzzle = () => {
 
   return (
     <PuzzleContainer
-      title={currentPuzzle.title}
-      description={currentPuzzle.description}
+      title={puzzleToUse.title}
+      description={puzzleToUse.description}
       disabled={!isActive}
     >
       {feedback && (
@@ -153,10 +158,10 @@ const Puzzle = () => {
       )}
       
       {/* Hint Panel */}
-      {isActive && currentPuzzle && (
+      {isActive && puzzleToUse && (
         <HintPanel
-          puzzleId={currentPuzzle.id}
-          timeSpent={currentPuzzle.time_spent || 0}
+          puzzleId={puzzleToUse.id}
+          timeSpent={puzzleToUse.time_spent || 0}
           onHintUsed={handleHintUsed}
         />
       )}

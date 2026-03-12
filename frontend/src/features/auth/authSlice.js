@@ -33,17 +33,13 @@ export const register = createAsyncThunk(
     try {
       const response = await axios.post(`${API_URL}/auth/register`, userData);
       
-      if (response.data.success) {
-        const { user, token } = response.data.data;
-        
-        // Store token and user in localStorage
-        localStorage.setItem('auth_token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        return { user, token };
-      } else {
-        return rejectWithValue(response.data.message || 'Error al registrar');
-      }
+      const { user, token } = response.data;
+      
+      // Store token and user in localStorage
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      
+      return { user, token };
     } catch (error) {
       if (error.response?.data?.errors) {
         // Handle validation errors
@@ -64,17 +60,13 @@ export const login = createAsyncThunk(
     try {
       const response = await axios.post(`${API_URL}/auth/login`, credentials);
       
-      if (response.data.success) {
-        const { user, token } = response.data.data;
-        
-        // Store token and user in localStorage
-        localStorage.setItem('auth_token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        return { user, token };
-      } else {
-        return rejectWithValue(response.data.message || 'Error al iniciar sesión');
-      }
+      const { user, token } = response.data;
+      
+      // Store token and user in localStorage
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      
+      return { user, token };
     } catch (error) {
       if (error.response?.status === 429) {
         return rejectWithValue(
@@ -100,7 +92,7 @@ export const logout = createAsyncThunk(
       const { token } = getState().auth;
       
       await axios.post(
-        `${API_URL}/auth/logout`,
+        `${API_URL}/logout`,
         {},
         {
           headers: {
@@ -136,7 +128,7 @@ export const fetchUser = createAsyncThunk(
         return rejectWithValue('No hay token de autenticación');
       }
       
-      const response = await axios.get(`${API_URL}/auth/user`, {
+      const response = await axios.get(`${API_URL}/user`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
