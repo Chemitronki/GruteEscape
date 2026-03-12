@@ -1,312 +1,233 @@
-# Lovecraftian Escape Room 🐙
+# 🎮 Lovecraftian Escape Room
 
-Una aplicación web de escape room con temática lovecraftiana. Los jugadores deben resolver 10 puzzles únicos dentro de un límite de tiempo de 25 minutos, ambientados en una gruta oscura llena de monstruos y terror cósmico.
+Una experiencia de escape room web con temática lovecraftiana oscura y terrorífica. Resuelve 10 puzzles únicos antes de que se agote el tiempo.
 
-## 🎮 Características
+![Version](https://img.shields.io/badge/version-1.0.0-purple)
+![Laravel](https://img.shields.io/badge/Laravel-10.x-red)
+![React](https://img.shields.io/badge/React-18-blue)
 
-- **10 Puzzles Únicos**: Desde cifrados de símbolos hasta laberintos de tentáculos
-- **Temporizador de 25 Minutos**: Cuenta regresiva en tiempo real
-- **Sistema de Pistas**: Hasta 3 pistas progresivas por puzzle
-- **Ranking Global**: Compite con otros jugadores por el mejor tiempo
-- **Cinemáticas**: Secuencias narrativas inmersivas
-- **Diseño Responsive**: Juega en desktop, tablet o móvil
-- **Autenticación Segura**: Sistema de registro y login con Laravel Sanctum
+## 🌟 Características
 
-## 🛠️ Stack Tecnológico
-
-### Backend
-- **Framework**: Laravel 10.x
-- **Lenguaje**: PHP 8.1+
-- **Base de Datos**: MySQL 8.0 / PostgreSQL 14+
-- **Autenticación**: Laravel Sanctum
-- **Testing**: PHPUnit + Pest
-
-### Frontend
-- **Framework**: React 18
-- **Estado**: Redux Toolkit
-- **Routing**: React Router
-- **Estilos**: Tailwind CSS
-- **Build**: Vite
-- **Testing**: Vitest + fast-check
-
-## 📋 Requisitos Previos
-
-Antes de comenzar, asegúrate de tener instalado:
-
-1. **PHP 8.1 o superior**
-   - Descarga: https://windows.php.net/download/
-   - O usa XAMPP: https://www.apachefriends.org/
-
-2. **Composer**
-   - Descarga: https://getcomposer.org/download/
-
-3. **Node.js 18+ y npm**
-   - Descarga: https://nodejs.org/
-
-4. **MySQL 8.0 o PostgreSQL 14+**
-   - MySQL: https://dev.mysql.com/downloads/mysql/
-   - PostgreSQL: https://www.postgresql.org/download/
+- ⏱️ **Timer de 25 minutos** - Carrera contra el tiempo
+- 🧩 **10 Puzzles Únicos** - Cada uno con mecánicas diferentes
+- 💡 **Sistema de Pistas** - 3 pistas por puzzle (disponibles después de 2 minutos)
+- 🏆 **Ranking Global** - Compite por el mejor tiempo
+- 🎨 **Tema Lovecraftiano** - Diseño oscuro con efectos visuales y sonoros
+- 📱 **Responsive** - Funciona en móvil, tablet y desktop
+- 🔒 **Seguro** - Autenticación, validación server-side, protección XSS
 
 ## 🚀 Instalación Rápida
 
-### Opción 1: Script Automático (Windows)
+### Opción 1: Script Automático (Recomendado)
 
 ```bash
-# Ejecuta el script de instalación completo
-install-all.bat
+# 1. Ejecutar instalación
+setup-complete.bat
+
+# 2. Crear base de datos MySQL
+CREATE DATABASE lovecraftian_escape;
+
+# 3. Configurar backend/.env con tus credenciales de MySQL
+
+# 4. Ejecutar migraciones
+migrate-database.bat
+
+# 5. Iniciar servidores
+start-servers.bat
 ```
 
-### Opción 2: Instalación Manual
+### Opción 2: Manual
 
-#### 1. Configurar Backend
-
+#### Backend (Laravel)
 ```bash
-# Crear proyecto Laravel
-composer create-project laravel/laravel:^10.0 backend
 cd backend
-
-# Instalar dependencias
-composer require laravel/sanctum
-composer require pestphp/pest --dev --with-all-dependencies
-composer require pestphp/pest-plugin-laravel --dev
-
-# Publicar configuración de Sanctum
-php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
-
-# Inicializar Pest
-php artisan pest:install
-
-# Copiar archivos de configuración
-copy ..\backend-config\* config\
-
-# Copiar migraciones
-copy ..\database-migrations\* database\migrations\
-
-# Configurar .env
 copy .env.example .env
-# Edita .env con tus credenciales de base de datos
-
-# Generar clave de aplicación
+composer install
 php artisan key:generate
-
-# Ejecutar migraciones
-php artisan migrate
-```
-
-#### 2. Configurar Frontend
-
-```bash
-# Crear proyecto React con Vite
-npm create vite@latest frontend -- --template react
-cd frontend
-
-# Instalar dependencias
-npm install
-
-# Instalar dependencias adicionales
-npm install @reduxjs/toolkit react-redux react-router-dom axios
-npm install -D tailwindcss postcss autoprefixer
-npm install -D vitest @testing-library/react @testing-library/jest-dom jsdom fast-check @vitest/ui
-
-# Inicializar Tailwind
-npx tailwindcss init -p
-
-# Copiar archivos de configuración
-copy ..\frontend-config\* .
-copy ..\frontend-config\src\* src\ /E
-
-# Configurar variables de entorno
-copy .env.example .env
-```
-
-## 🎯 Uso
-
-### Iniciar Servidores de Desarrollo
-
-**Terminal 1 - Backend:**
-```bash
-cd backend
+# Configurar .env con credenciales de base de datos
+php artisan migrate:fresh --seed
 php artisan serve
-# Backend disponible en http://localhost:8000
 ```
 
-**Terminal 2 - Frontend:**
+#### Frontend (React)
 ```bash
 cd frontend
+copy .env.example .env
+npm install
 npm run dev
-# Frontend disponible en http://localhost:5173
 ```
 
-### Ejecutar Tests
+## 📋 Requisitos
 
-**Backend:**
-```bash
-cd backend
-php artisan test
-# O con Pest
-./vendor/bin/pest
-```
+- PHP 8.1+
+- Composer
+- Node.js 18+
+- MySQL 8.0+
+- Laragon (recomendado para Windows)
 
-**Frontend:**
-```bash
-cd frontend
-npm run test
-# O con UI
-npm run test:ui
-```
+## 🎯 Cómo Jugar
+
+1. **Regístrate** - Crea una cuenta nueva
+2. **Inicia el Juego** - Comienza tu sesión de 25 minutos
+3. **Resuelve Puzzles** - 10 puzzles en secuencia
+4. **Usa Pistas** - Si te atascas (disponibles después de 2 minutos)
+5. **Completa el Juego** - ¡Aparece en el ranking global!
+
+## 🧩 Tipos de Puzzles
+
+1. **Symbol Cipher** - Descifra símbolos lovecraftianos
+2. **Ritual Pattern** - Ordena items rituales
+3. **Ancient Lock** - Resuelve la combinación
+4. **Memory Fragments** - Empareja imágenes
+5. **Cosmic Alignment** - Alinea cuerpos celestiales
+6. **Tentacle Maze** - Navega evitando tentáculos
+7. **Forbidden Tome** - Ordena páginas antiguas
+8. **Shadow Reflection** - Replica patrones de sombras
+9. **Cultist Code** - Decodifica mensajes cifrados
+10. **Elder Sign Drawing** - Traza el signo sin levantar el cursor
+
+## 🛠️ Tecnologías
+
+### Backend
+- Laravel 10.x
+- Laravel Sanctum (autenticación)
+- MySQL
+- PHP 8.1+
+
+### Frontend
+- React 18
+- Redux Toolkit (estado)
+- React Router (navegación)
+- Axios (HTTP)
+- Vite (build)
 
 ## 📁 Estructura del Proyecto
 
 ```
 lovecraftian-escape-room/
-├── backend/                    # Laravel backend
+├── backend/                    # Laravel API
 │   ├── app/
-│   │   ├── Http/
-│   │   │   ├── Controllers/   # API controllers
-│   │   │   └── Middleware/    # Custom middleware
-│   │   ├── Models/            # Eloquent models
-│   │   └── Services/          # Business logic
+│   │   ├── Http/Controllers/  # Controladores API
+│   │   ├── Models/            # Modelos Eloquent
+│   │   └── Services/          # Lógica de negocio
 │   ├── database/
-│   │   ├── migrations/        # Database migrations
-│   │   └── seeders/           # Database seeders
-│   ├── routes/
-│   │   └── api.php           # API routes
-│   └── tests/                # PHPUnit/Pest tests
+│   │   └── migrations/        # Migraciones
+│   └── routes/api.php         # Rutas API
 │
-├── frontend/                  # React frontend
+├── frontend/                   # React SPA
 │   ├── src/
-│   │   ├── components/       # React components
+│   │   ├── components/        # Componentes React
+│   │   │   ├── auth/         # Login/Register
+│   │   │   ├── game/         # Juego y puzzles
+│   │   │   ├── ranking/      # Leaderboard
+│   │   │   ├── audio/        # Sistema de audio
+│   │   │   └── cinematic/    # Cinemáticas
 │   │   ├── features/         # Redux slices
-│   │   ├── pages/            # Page components
-│   │   ├── config/           # Configuration files
-│   │   └── test/             # Test utilities
-│   └── public/               # Static assets
+│   │   ├── pages/            # Páginas principales
+│   │   └── styles/           # CSS global
+│   └── public/
 │
-├── database-migrations/       # Migration templates
-├── backend-config/           # Backend config templates
-├── frontend-config/          # Frontend config templates
-├── SETUP_INSTRUCTIONS.md     # Detailed setup guide
-└── README.md                 # This file
+├── database-migrations/        # Migraciones adicionales
+├── setup-complete.bat         # Script de instalación
+├── start-servers.bat          # Iniciar servidores
+└── migrate-database.bat       # Ejecutar migraciones
 ```
 
-## 🎨 Puzzles Implementados
+## 🔧 Configuración
 
-1. **Symbol Cipher**: Decodifica símbolos lovecraftianos
-2. **Ritual Pattern**: Ordena items rituales en secuencia
-3. **Ancient Lock**: Resuelve combinación basada en pistas
-4. **Memory Fragments**: Empareja imágenes eldritchas
-5. **Cosmic Alignment**: Alinea cuerpos celestes
-6. **Tentacle Maze**: Navega un laberinto cambiante
-7. **Forbidden Tome**: Reconstruye páginas antiguas
-8. **Shadow Reflection**: Refleja patrones de sombras
-9. **Cultist Code**: Decodifica mensajes interceptados
-10. **Elder Sign Drawing**: Traza patrones geométricos complejos
-
-## 🔒 Seguridad
-
-- Contraseñas hasheadas con bcrypt (cost factor 10+)
-- HTTPS en producción
-- Protección CSRF
-- Sanitización de inputs (prevención XSS)
-- Queries parametrizadas (prevención SQL injection)
-- Rate limiting en endpoints de autenticación
-- Validación server-side de todas las acciones del juego
-- Session timeout después de 2 horas de inactividad
-
-## 🧪 Testing
-
-El proyecto implementa una estrategia dual de testing:
-
-- **Unit Tests**: Casos específicos y edge cases
-- **Property-Based Tests**: Propiedades universales con fast-check/Pest
-- **Integration Tests**: Flujos completos de API
-- **E2E Tests**: Journeys de usuario completos
-
-Objetivo de cobertura:
-- Backend: 80%+
-- Frontend: 70%+
-
-## 📝 Configuración de Base de Datos
-
-### MySQL
-
-```sql
-CREATE DATABASE lovecraftian_escape CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
-Edita `backend/.env`:
+### Backend (.env)
 ```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
 DB_DATABASE=lovecraftian_escape
 DB_USERNAME=root
-DB_PASSWORD=tu_password
+DB_PASSWORD=
+
+FRONTEND_URL=http://localhost:5173
+SANCTUM_STATEFUL_DOMAINS=localhost:5173
 ```
 
-### PostgreSQL
-
-```sql
-CREATE DATABASE lovecraftian_escape;
-```
-
-Edita `backend/.env`:
+### Frontend (.env)
 ```env
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_DATABASE=lovecraftian_escape
-DB_USERNAME=postgres
-DB_PASSWORD=tu_password
+VITE_API_URL=http://localhost:8000/api
 ```
 
 ## 🐛 Solución de Problemas
 
-### "composer: command not found"
-- Reinicia tu terminal después de instalar Composer
-- Verifica que Composer esté en tu PATH
-
-### "php: command not found"
-- Agrega PHP a tu PATH de Windows
-- O usa XAMPP y ejecuta desde su terminal
-
 ### Error de conexión a base de datos
-- Verifica que MySQL/PostgreSQL esté ejecutándose
-- Verifica las credenciales en `.env`
-- Asegúrate de que la base de datos existe
+```bash
+# Verifica que MySQL esté corriendo
+# Confirma credenciales en backend/.env
+# Asegúrate de que la base de datos existe
+```
 
-### Puerto en uso
-- Backend: `php artisan serve --port=8001`
-- Frontend: Cambia el puerto en `vite.config.js`
+### Error de CORS
+```bash
+# Verifica FRONTEND_URL en backend/.env
+# Confirma VITE_API_URL en frontend/.env
+```
 
-### CORS errors
-- Verifica que `SANCTUM_STATEFUL_DOMAINS` en `.env` incluya tu dominio frontend
-- Verifica que `withCredentials: true` esté configurado en axios
+### Limpiar caché
+```bash
+cd backend
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+```
 
-## 📚 Documentación Adicional
+## 📊 Base de Datos
 
-- [Especificación de Requisitos](.kiro/specs/lovecraftian-escape-room/requirements.md)
-- [Documento de Diseño](.kiro/specs/lovecraftian-escape-room/design.md)
-- [Lista de Tareas](.kiro/specs/lovecraftian-escape-room/tasks.md)
-- [Instrucciones de Setup](SETUP_INSTRUCTIONS.md)
+### Tablas Principales
+- `users` - Usuarios registrados
+- `game_sessions` - Sesiones de juego
+- `puzzles` - 10 puzzles del juego
+- `puzzle_progress` - Progreso por puzzle
+- `hints` - 30 pistas (3 por puzzle)
+- `rankings` - Tabla de clasificación
 
-## 🤝 Contribución
+## 🎨 Características de Diseño
 
-Este proyecto es parte de un spec de desarrollo. Para contribuir:
+- **Paleta de colores oscura** - Negro profundo, púrpura eldritch, verde tóxico
+- **Efectos de partículas** - Ambiente atmosférico
+- **Animaciones suaves** - Transiciones y feedback visual
+- **Efectos de sonido** - Audio generado con Web Audio API
+- **Cinemáticas** - Opening y victory screens
+- **Responsive** - Optimizado para todos los dispositivos
 
-1. Lee la documentación en `.kiro/specs/lovecraftian-escape-room/`
-2. Sigue las convenciones de código establecidas
-3. Escribe tests para nuevas funcionalidades
-4. Asegúrate de que todos los tests pasen
+## 🔒 Seguridad
 
-## 📄 Licencia
+- ✅ Autenticación con Laravel Sanctum
+- ✅ Bcrypt para passwords (cost 10+)
+- ✅ Rate limiting (5 intentos/minuto)
+- ✅ Validación server-side de puzzles
+- ✅ Protección XSS
+- ✅ Content Security Policy
+- ✅ SQL injection prevention (Eloquent ORM)
+- ✅ Session timeout (2 horas)
 
-Este proyecto es de código abierto y está disponible bajo la licencia MIT.
+## 📈 Optimizaciones
 
-## 🎭 Créditos
+- Code splitting (React lazy loading)
+- Caching de rankings (30 segundos)
+- Eager loading en queries
+- Bundle optimization con Vite
+- Lazy loading de imágenes
+- State persistence en localStorage
 
-Inspirado en las obras de H.P. Lovecraft y el género de terror cósmico.
+## 🤝 Contribuir
+
+Este es un proyecto educativo. Si encuentras bugs o tienes sugerencias:
+
+1. Reporta issues
+2. Propón mejoras
+3. Comparte tu feedback
+
+## 📝 Licencia
+
+Este proyecto es de código abierto para fines educativos.
+
+## 👨‍💻 Autor
+
+Desarrollado como proyecto de escape room web con temática lovecraftiana.
 
 ---
 
-**¡Que los Antiguos te guíen en tu escape! 🐙👁️**
+**¡Disfruta del juego y que los Antiguos te acompañen! 🐙**

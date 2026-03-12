@@ -14,5 +14,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return ['message' => 'Lovecraftian Escape Room API'];
+    return view('welcome');
 });

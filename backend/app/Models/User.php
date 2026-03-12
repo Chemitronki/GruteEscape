@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
@@ -18,7 +18,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'username',
+        'name',
         'email',
         'password',
     ];
@@ -42,31 +42,4 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-
-    /**
-     * Set the user's password with bcrypt hashing (cost 10+).
-     *
-     * @param string $value
-     * @return void
-     */
-    public function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = Hash::make($value, ['rounds' => 10]);
-    }
-
-    /**
-     * Get the user's game sessions.
-     */
-    public function gameSessions()
-    {
-        return $this->hasMany(GameSession::class);
-    }
-
-    /**
-     * Get the user's ranking entry.
-     */
-    public function ranking()
-    {
-        return $this->hasOne(Ranking::class);
-    }
 }

@@ -1,0 +1,103 @@
+========================================
+LOVECRAFTIAN ESCAPE ROOM
+Instrucciones de Instalación Rápida
+========================================
+
+PASO 1: CREAR BASE DE DATOS
+----------------------------
+1. Abre MySQL (desde Laragon o tu gestor de MySQL)
+2. Ejecuta este comando:
+   CREATE DATABASE lovecraftian_escape CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+
+PASO 2: INSTALAR DEPENDENCIAS
+------------------------------
+1. Haz doble clic en: setup-complete.bat
+2. Espera a que termine (puede tardar varios minutos)
+
+
+PASO 3: CONFIGURAR BASE DE DATOS
+---------------------------------
+1. Abre el archivo: backend/.env
+2. Busca estas líneas y configúralas con tus datos:
+   
+   DB_DATABASE=lovecraftian_escape
+   DB_USERNAME=root
+   DB_PASSWORD=          (pon tu password de MySQL aquí)
+
+
+PASO 4: EJECUTAR MIGRACIONES
+-----------------------------
+1. Haz doble clic en: migrate-database.bat
+2. Esto creará todas las tablas y datos iniciales
+
+
+PASO 5: INICIAR SERVIDORES
+---------------------------
+1. Haz doble clic en: start-servers.bat
+2. Se abrirán 2 ventanas de terminal:
+   - Backend (Laravel) en http://localhost:8000
+   - Frontend (React) en http://localhost:5173
+3. Tu navegador se abrirá automáticamente
+
+
+PASO 6: ¡JUGAR!
+----------------
+1. Regístrate con un nuevo usuario
+2. Inicia el juego
+3. Resuelve los 10 puzzles en 25 minutos
+4. ¡Aparece en el ranking!
+
+
+SOLUCIÓN DE PROBLEMAS
+----------------------
+
+Si algo falla en el PASO 2:
+- Asegúrate de tener Composer instalado: https://getcomposer.org/
+- Asegúrate de tener Node.js instalado: https://nodejs.org/
+
+Si falla el PASO 4:
+- Verifica que MySQL esté corriendo
+- Confirma que la base de datos existe
+- Revisa las credenciales en backend/.env
+
+Si no se abre el navegador:
+- Abre manualmente: http://localhost:5173
+
+
+COMANDOS ÚTILES
+---------------
+
+Reiniciar base de datos:
+  cd backend
+  php artisan migrate:fresh --seed
+
+Limpiar caché:
+  cd backend
+  php artisan cache:clear
+  php artisan config:clear
+
+Ver rutas API:
+  cd backend
+  php artisan route:list
+
+
+CARACTERÍSTICAS DEL JUEGO
+--------------------------
+✓ 25 minutos para completar
+✓ 10 puzzles únicos
+✓ 3 pistas por puzzle
+✓ Ranking global
+✓ Tema lovecraftiano oscuro
+✓ Efectos de sonido
+✓ Cinemáticas
+✓ Responsive (móvil, tablet, desktop)
+
+
+¿NECESITAS AYUDA?
+-----------------
+Lee el archivo: SETUP_GUIDE.md
+O el archivo: README.md
+
+
+¡Disfruta del juego! 🎮🐙
