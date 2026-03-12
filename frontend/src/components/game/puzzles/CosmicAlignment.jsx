@@ -7,14 +7,18 @@ import './CosmicAlignment.css';
  * Requirements: 3.1, 3.7
  */
 const CosmicAlignment = ({ puzzleData, onSubmit, disabled }) => {
-  const stars = puzzleData?.data?.stars || [];
-  const chartImage = puzzleData?.data?.chart || '';
+  const solutionData = typeof puzzleData?.solution_data === 'string' 
+    ? JSON.parse(puzzleData.solution_data) 
+    : puzzleData?.solution_data || {};
+  
+  const stars = (solutionData?.solution || []).map(name => ({ name }));
+  const positions = solutionData?.positions || [];
   
   const [starPositions, setStarPositions] = useState(
     stars.map((star, index) => ({
       name: star.name,
-      x: 50 + (index * 60) % 300,
-      y: 50 + Math.floor(index / 5) * 60,
+      x: positions[index]?.x || (50 + (index * 60) % 300),
+      y: positions[index]?.y || (50 + Math.floor(index / 5) * 60),
     }))
   );
   

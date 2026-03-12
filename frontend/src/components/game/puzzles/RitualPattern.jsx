@@ -7,7 +7,15 @@ import './RitualPattern.css';
  * Requirements: 3.1, 3.7
  */
 const RitualPattern = ({ puzzleData, onSubmit, disabled }) => {
-  const items = puzzleData?.data?.items || [];
+  const solutionData = typeof puzzleData?.solution_data === 'string' 
+    ? JSON.parse(puzzleData.solution_data) 
+    : puzzleData?.solution_data || {};
+  
+  const items = (solutionData?.items || []).map((item, index) => ({
+    id: index,
+    name: item.charAt(0).toUpperCase() + item.slice(1),
+    icon: item === 'candle' ? '🕯️' : item === 'tome' ? '📖' : item === 'dagger' ? '🗡️' : item === 'chalice' ? '🏆' : '💀'
+  }));
   const [selectedSequence, setSelectedSequence] = useState([]);
 
   const handleItemClick = (item) => {

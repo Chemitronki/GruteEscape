@@ -7,7 +7,17 @@ import './ForbiddenTome.css';
  * Requirements: 3.1, 3.7
  */
 const ForbiddenTome = ({ puzzleData, onSubmit, disabled }) => {
-  const pages = puzzleData?.data?.pages || [];
+  const solutionData = typeof puzzleData?.solution_data === 'string' 
+    ? JSON.parse(puzzleData.solution_data) 
+    : puzzleData?.solution_data || {};
+  
+  const pageTexts = solutionData?.pages || [];
+  const pages = pageTexts.map((content, index) => ({
+    id: index,
+    content: content,
+    image: null
+  }));
+  
   const [orderedPages, setOrderedPages] = useState([...pages]);
   const [draggedPage, setDraggedPage] = useState(null);
 

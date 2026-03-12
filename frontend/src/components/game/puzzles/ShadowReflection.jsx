@@ -7,7 +7,11 @@ import './ShadowReflection.css';
  * Requirements: 3.1, 3.7
  */
 const ShadowReflection = ({ puzzleData, onSubmit, disabled }) => {
-  const targetPattern = puzzleData?.data?.pattern || [];
+  const solutionData = typeof puzzleData?.solution_data === 'string' 
+    ? JSON.parse(puzzleData.solution_data) 
+    : puzzleData?.solution_data || {};
+  
+  const targetPattern = solutionData?.solution || [];
   const patternLength = targetPattern.length;
   
   const [userPattern, setUserPattern] = useState([]);

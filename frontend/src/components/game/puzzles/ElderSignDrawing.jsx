@@ -14,8 +14,12 @@ const ElderSignDrawing = ({ puzzleData, onSubmit, disabled }) => {
   const [accuracy, setAccuracy] = useState(0);
   const [hasLifted, setHasLifted] = useState(false);
 
-  const targetPattern = puzzleData?.data?.pattern || [];
-  const tolerance = puzzleData?.data?.tolerance || 20;
+  const solutionData = typeof puzzleData?.solution_data === 'string' 
+    ? JSON.parse(puzzleData.solution_data) 
+    : puzzleData?.solution_data || {};
+  
+  const targetPattern = solutionData?.points || [];
+  const tolerance = solutionData?.tolerance || 20;
 
   useEffect(() => {
     // Draw the target pattern on overlay canvas

@@ -9,8 +9,12 @@ import './SymbolCipher.css';
 const SymbolCipher = ({ puzzleData, onSubmit, disabled }) => {
   const [decodedWord, setDecodedWord] = useState('');
   
-  const symbols = puzzleData?.data?.symbols || [];
-  const hint = puzzleData?.data?.hint || '';
+  const solutionData = typeof puzzleData?.solution_data === 'string' 
+    ? JSON.parse(puzzleData.solution_data) 
+    : puzzleData?.solution_data || {};
+  
+  const symbols = solutionData?.symbols || [];
+  const hint = solutionData?.hint || '';
 
   const handleSubmit = (e) => {
     e.preventDefault();

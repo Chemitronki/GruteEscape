@@ -7,8 +7,18 @@ import './MemoryFragments.css';
  * Requirements: 3.1, 3.7
  */
 const MemoryFragments = ({ puzzleData, onSubmit, disabled }) => {
-  const totalPairs = puzzleData?.data?.pairs || 6;
-  const cards = puzzleData?.data?.cards || [];
+  const solutionData = typeof puzzleData?.solution_data === 'string' 
+    ? JSON.parse(puzzleData.solution_data) 
+    : puzzleData?.solution_data || {};
+  
+  const totalPairs = solutionData?.pairs || 6;
+  const images = solutionData?.images || [];
+  
+  // Create card pairs
+  const cards = images.flatMap((image, index) => [
+    { pairId: index, icon: image === 'tentacle' ? '🐙' : image === 'eye' ? '👁️' : image === 'star' ? '⭐' : image === 'tome' ? '📖' : image === 'portal' ? '🌀' : image === 'cultist' ? '🧙' : image === 'monster' ? '👹' : '🔮' },
+    { pairId: index, icon: image === 'tentacle' ? '🐙' : image === 'eye' ? '👁️' : image === 'star' ? '⭐' : image === 'tome' ? '📖' : image === 'portal' ? '🌀' : image === 'cultist' ? '🧙' : image === 'monster' ? '👹' : '🔮' }
+  ]).sort(() => Math.random() - 0.5);
   
   const [flippedCards, setFlippedCards] = useState([]);
   const [matchedPairs, setMatchedPairs] = useState([]);

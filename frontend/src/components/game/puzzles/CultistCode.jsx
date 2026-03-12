@@ -7,7 +7,11 @@ import './CultistCode.css';
  * Requirements: 3.1, 3.7
  */
 const CultistCode = ({ puzzleData, onSubmit, disabled }) => {
-  const encodedMessage = puzzleData?.data?.encoded || '';
+  const solutionData = typeof puzzleData?.solution_data === 'string' 
+    ? JSON.parse(puzzleData.solution_data) 
+    : puzzleData?.solution_data || {};
+  
+  const encodedMessage = solutionData?.encrypted || '';
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
   
   const [decodedMessage, setDecodedMessage] = useState('');

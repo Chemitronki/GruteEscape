@@ -7,8 +7,12 @@ import './AncientLock.css';
  * Requirements: 3.1, 3.7
  */
 const AncientLock = ({ puzzleData, onSubmit, disabled }) => {
-  const clues = puzzleData?.data?.clues || [];
-  const combinationLength = puzzleData?.data?.length || 4;
+  const solutionData = typeof puzzleData?.solution_data === 'string' 
+    ? JSON.parse(puzzleData.solution_data) 
+    : puzzleData?.solution_data || {};
+  
+  const clues = solutionData?.clues || [];
+  const combinationLength = solutionData?.solution?.length || 4;
   
   const [combination, setCombination] = useState(Array(combinationLength).fill(''));
 

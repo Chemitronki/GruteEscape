@@ -7,9 +7,19 @@ import './TentacleMaze.css';
  * Requirements: 3.1, 3.7
  */
 const TentacleMaze = ({ puzzleData, onSubmit, disabled }) => {
-  const gridSize = puzzleData?.data?.gridSize || 8;
-  const obstacles = puzzleData?.data?.obstacles || [];
-  const exitPos = puzzleData?.data?.exit || { x: gridSize - 1, y: gridSize - 1 };
+  const solutionData = typeof puzzleData?.solution_data === 'string' 
+    ? JSON.parse(puzzleData.solution_data) 
+    : puzzleData?.solution_data || {};
+  
+  const gridSize = solutionData?.maze_size || 8;
+  
+  // Generate random obstacles
+  const obstacles = Array.from({ length: solutionData?.tentacles || 5 }).map((_, i) => ({
+    x: Math.floor(Math.random() * (gridSize - 2)) + 1,
+    y: Math.floor(Math.random() * (gridSize - 2)) + 1,
+  }));
+  
+  const exitPos = solutionData?.exit || { x: gridSize - 1, y: gridSize - 1 };
   
   const [playerPos, setPlayerPos] = useState({ x: 0, y: 0 });
   const [path, setPath] = useState([{ x: 0, y: 0 }]);
