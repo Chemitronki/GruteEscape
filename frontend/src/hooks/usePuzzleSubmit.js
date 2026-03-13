@@ -16,7 +16,11 @@ const usePuzzleSubmit = (puzzleId, sessionId) => {
     setFeedback(null);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+      
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/puzzles/${puzzleId}/submit`,
         {
