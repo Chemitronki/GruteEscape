@@ -12,12 +12,12 @@
         "laravel/tinker": "^2.8"
     },
     "require-dev": {
-        "fakerphp/faker": "*",
-        "laravel/pint": "*",
+        "fakerphp/faker": "^1.24",
+        "laravel/pint": "^1.20",
         "laravel/sail": "^1.18",
-        "mockery/mockery": "*",
+        "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^7.0",
-        "phpunit/phpunit": "*",
+        "phpunit/phpunit": "^10.5",
         "spatie/laravel-ignition": "^2.0"
     },
     "autoload": {

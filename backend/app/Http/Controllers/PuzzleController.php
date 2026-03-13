@@ -24,6 +24,12 @@ class PuzzleController extends Controller
             ], 404);
         }
         
+        if ($session->status !== 'active') {
+            return response()->json([
+                'message' => 'La sesión no está activa'
+            ], 404);
+        }
+        
         // Get the first incomplete puzzle
         $completedCount = PuzzleProgress::where('game_session_id', $sessionId)
             ->where('is_completed', true)
@@ -162,7 +168,10 @@ class PuzzleController extends Controller
     private function validateSolution($puzzle, $solution)
     {
         try {
-            $solutionData = json_decode($puzzle->solution_data, true);
+            // solution_data is already decoded as array due to JSON cast in model
+            $solutionData = is_array($puzzle->solution_data) 
+                ? $puzzle->solution_data 
+                : json_decode($puzzle->solution_data, true);
             
             if (!$solutionData) {
                 \Log::error('Invalid JSON in puzzle solution_data', [

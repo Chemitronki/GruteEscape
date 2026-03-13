@@ -33,6 +33,20 @@ class GameSessionController extends Controller
             'status' => 'active'
         ]);
         
+        // Initialize first puzzle progress
+        $firstPuzzle = Puzzle::where('sequence_order', 1)->first();
+        if ($firstPuzzle) {
+            \App\Models\PuzzleProgress::create([
+                'game_session_id' => $session->id,
+                'puzzle_id' => $firstPuzzle->id,
+                'started_at' => now(),
+                'time_spent' => 0,
+                'attempts' => 0,
+                'hints_used' => 0,
+                'is_completed' => false,
+            ]);
+        }
+        
         return response()->json([
             'message' => 'Sesión de juego iniciada',
             'session' => $session
