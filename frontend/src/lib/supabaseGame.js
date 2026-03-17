@@ -1,3 +1,4 @@
+// v2 - fixed all .single() to .maybeSingle()
 import { supabase } from './supabase';
 
 export const gameService = {
