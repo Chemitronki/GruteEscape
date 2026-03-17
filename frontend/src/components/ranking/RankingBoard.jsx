@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { rankingService } from '../../lib/supabaseRanking';
@@ -13,10 +13,7 @@ const RankingBoard = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
+    if (!isAuthenticated) { navigate('/login'); return; }
     fetchRankings();
   }, [isAuthenticated, navigate]);
 
@@ -25,12 +22,10 @@ const RankingBoard = () => {
       setLoading(true);
       const top = await rankingService.getTop(100);
       setRankings(top);
-
       if (user?.id) {
         const rank = await rankingService.getUserRank(user.id);
         setUserRank(rank);
       }
-
       setError(null);
     } catch (err) {
       console.error('Error fetching rankings:', err);
@@ -41,6 +36,13 @@ const RankingBoard = () => {
   };
 
   if (!isAuthenticated) return null;
+
+  const getRowClass = (ranking) => {
+    let cls = 'table-row';
+    if (ranking.rank <= 3) cls += ` top-${ranking.rank}`;
+    if (userRank?.rank === ranking.rank) cls += ' current-user';
+    return cls;
+  };
 
   return (
     <div className="ranking-board">
@@ -62,7 +64,7 @@ const RankingBoard = () => {
             {userRank && (
               <div className="user-rank-card">
                 <div className="user-rank-content">
-                  <span className="user-rank-label">Tu Posición:</span>
+                  <span className="user-rank-label">Tu posición</span>
                   <span className="user-rank-position">#{userRank.rank}</span>
                   <span className="user-rank-time">{userRank.formatted_time}</span>
                 </div>
@@ -71,7 +73,7 @@ const RankingBoard = () => {
 
             <div className="rankings-table">
               <div className="table-header">
-                <div className="col-rank">Posición</div>
+                <div className="col-rank">Pos.</div>
                 <div className="col-username">Jugador</div>
                 <div className="col-time">Tiempo</div>
                 <div className="col-date">Fecha</div>
@@ -79,16 +81,10 @@ const RankingBoard = () => {
               <div className="table-body">
                 {rankings.length > 0 ? (
                   rankings.map((ranking, index) => (
-                    <div
-                      key={index}
-                      className={`table-row ${userRank?.rank === ranking.rank ? 'current-user' : ''}`}
-                    >
+                    <div key={index} className={getRowClass(ranking)}>
                       <div className="col-rank">
                         <span className={`rank-badge rank-${ranking.rank}`}>
-                          {ranking.rank === 1 && '🥇'}
-                          {ranking.rank === 2 && '🥈'}
-                          {ranking.rank === 3 && '🥉'}
-                          {ranking.rank > 3 && ranking.rank}
+                          {ranking.rank === 1 ? '🥇' : ranking.rank === 2 ? '🥈' : ranking.rank === 3 ? '🥉' : ranking.rank}
                         </span>
                       </div>
                       <div className="col-username">
@@ -105,7 +101,7 @@ const RankingBoard = () => {
                   ))
                 ) : (
                   <div className="no-rankings">
-                    <p>Aún no hay registros en el ranking</p>
+                    Aún no hay registros en el ranking. ¡Sé el primero en escapar!
                   </div>
                 )}
               </div>
