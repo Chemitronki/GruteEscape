@@ -37,16 +37,17 @@ const RankingBoard = () => {
 
   if (!isAuthenticated) return null;
 
-  const getRowClass = (ranking) => {
-    let cls = 'table-row';
-    if (ranking.rank <= 3) cls += ` top-${ranking.rank}`;
-    if (userRank?.rank === ranking.rank) cls += ' current-user';
-    return cls;
+  const medal = (rank) => {
+    if (rank === 1) return '🥇';
+    if (rank === 2) return '🥈';
+    if (rank === 3) return '🥉';
+    return rank;
   };
 
   return (
     <div className="ranking-board">
       <div className="ranking-container">
+
         <div className="ranking-header">
           <h1 className="ranking-title">🏆 Ranking Global</h1>
           <p className="ranking-subtitle">Los mejores tiempos de escape</p>
@@ -54,59 +55,59 @@ const RankingBoard = () => {
 
         {error && <div className="ranking-error">⚠️ {error}</div>}
 
+        {userRank && (
+          <div className="user-rank-card">
+            <span className="user-rank-label">Tu posición</span>
+            <span className="user-rank-position">#{userRank.rank}</span>
+            <span className="user-rank-time">{userRank.formatted_time}</span>
+          </div>
+        )}
+
         {loading ? (
           <div className="ranking-loading">
             <div className="loading-spinner"></div>
             <p>Cargando ranking...</p>
           </div>
         ) : (
-          <>
-            {userRank && (
-              <div className="user-rank-card">
-                <div className="user-rank-content">
-                  <span className="user-rank-label">Tu posición</span>
-                  <span className="user-rank-position">#{userRank.rank}</span>
-                  <span className="user-rank-time">{userRank.formatted_time}</span>
-                </div>
-              </div>
-            )}
-
-            <div className="rankings-table">
-              <div className="table-header">
-                <div className="col-rank">Pos.</div>
-                <div className="col-username">Jugador</div>
-                <div className="col-time">Tiempo</div>
-                <div className="col-date">Fecha</div>
-              </div>
-              <div className="table-body">
-                {rankings.length > 0 ? (
-                  rankings.map((ranking, index) => (
-                    <div key={index} className={getRowClass(ranking)}>
-                      <div className="col-rank">
-                        <span className={`rank-badge rank-${ranking.rank}`}>
-                          {ranking.rank === 1 ? '🥇' : ranking.rank === 2 ? '🥈' : ranking.rank === 3 ? '🥉' : ranking.rank}
-                        </span>
-                      </div>
-                      <div className="col-username">
-                        {ranking.username}
-                        {userRank?.rank === ranking.rank && <span className="you-badge">Tú</span>}
-                      </div>
-                      <div className="col-time">
-                        <span className="time-value">{ranking.formatted_time}</span>
-                      </div>
-                      <div className="col-date">
-                        {new Date(ranking.completed_at).toLocaleDateString('es-ES')}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="no-rankings">
-                    Aún no hay registros en el ranking. ¡Sé el primero en escapar!
-                  </div>
+          <div className="rankings-table">
+            <table>
+              <thead>
+                <tr>
+                  <th className="th-pos">Pos.</th>
+                  <th className="th-player">Jugador</th>
+                  <th className="th-time">Tiempo</th>
+                  <th className="th-date">Fecha</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rankings.length > 0 ? rankings.map((r, i) => (
+                  <tr
+                    key={i}
+                    className={`
+                      ${r.rank <= 3 ? `top-${r.rank}` : ''}
+                      ${userRank?.rank === r.rank ? 'current-user' : ''}
+                    `}
+                  >
+                    <td className="td-pos">
+                      <span className={`rank-badge rank-${r.rank}`}>{medal(r.rank)}</span>
+                    </td>
+                    <td className="td-player">
+                      {r.username}
+                      {userRank?.rank === r.rank && <span className="you-badge">Tú</span>}
+                    </td>
+                    <td className="td-time">{r.formatted_time}</td>
+                    <td className="td-date">{new Date(r.completed_at).toLocaleDateString('es-ES')}</td>
+                  </tr>
+                )) : (
+                  <tr>
+                    <td colSpan="4" className="no-rankings">
+                      Aún no hay registros. ¡Sé el primero en escapar!
+                    </td>
+                  </tr>
                 )}
-              </div>
-            </div>
-          </>
+              </tbody>
+            </table>
+          </div>
         )}
 
         <div className="ranking-actions">
@@ -114,6 +115,7 @@ const RankingBoard = () => {
             ← Volver al Inicio
           </button>
         </div>
+
       </div>
     </div>
   );
