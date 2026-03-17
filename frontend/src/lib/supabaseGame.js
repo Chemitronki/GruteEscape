@@ -187,7 +187,10 @@ export const gameService = {
     const solution = puzzle.solution_data?.solution;
     let isCorrect = false;
 
-    if (Array.isArray(solution)) {
+    // If no solution defined, puzzle is self-validating (e.g. memory matching)
+    if (solution === undefined || solution === null) {
+      isCorrect = answer === true || answer === 'true';
+    } else if (Array.isArray(solution)) {
       isCorrect = JSON.stringify(solution) === JSON.stringify(answer);
     } else if (typeof solution === 'string') {
       isCorrect = solution.toUpperCase() === String(answer).toUpperCase();
