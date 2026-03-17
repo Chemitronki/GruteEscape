@@ -3,13 +3,13 @@ import { supabase } from './supabase';
 export const gameService = {
   // Start a new game session
   async startGame(userId) {
-    // Check for existing active session
+    // Check for existing active session (may not exist - use maybeSingle)
     const { data: existing } = await supabase
       .from('game_sessions')
       .select('*')
       .eq('user_id', userId)
       .eq('status', 'active')
-      .single();
+      .maybeSingle();
 
     if (existing) return existing;
 
@@ -26,7 +26,7 @@ export const gameService = {
       .from('puzzles')
       .select('id')
       .eq('sequence_order', 1)
-      .single();
+      .maybeSingle();
 
     if (firstPuzzle) {
       await supabase.from('puzzle_progress').insert({
@@ -50,9 +50,9 @@ export const gameService = {
       .select('*')
       .eq('user_id', userId)
       .eq('status', 'active')
-      .single();
+      .maybeSingle();
 
-    if (error && error.code !== 'PGRST116') throw error;
+    if (error) throw error;
     return data;
   },
 
@@ -70,7 +70,9 @@ export const gameService = {
     const timeRemaining = Math.max(0, 1500 - elapsed);
 
     if (timeRemaining <= 0) {
-      await supabase.from('game_sessions').update({ status: 'timeout', completed_at: new Date().toISOString() }).eq('id', sessionId);
+      await supabase.from('game_sessions')
+        .update({ status: 'timeout', completed_at: new Date().toISOString() })
+        .eq('id', sessionId);
     }
 
     return { time_remaining: timeRemaining };
@@ -93,19 +95,22 @@ export const gameService = {
       completion_time: completionTime
     }).eq('id', sessionId);
 
-    // Update ranking
+    // Update ranking (may not exist yet - use maybeSingle)
     const { data: existing } = await supabase
       .from('rankings')
       .select('*')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     if (existing) {
       if (completionTime < existing.completion_time) {
-        await supabase.from('rankings').update({ completion_time: completionTime, completed_at: completedAt }).eq('user_id', userId);
+        await supabase.from('rankings')
+          .update({ completion_time: completionTime, completed_at: completedAt })
+          .eq('user_id', userId);
       }
     } else {
-      await supabase.from('rankings').insert({ user_id: userId, completion_time: completionTime, completed_at: completedAt });
+      await supabase.from('rankings')
+        .insert({ user_id: userId, completion_time: completionTime, completed_at: completedAt });
     }
 
     return { completion_time: completionTime };
@@ -122,7 +127,6 @@ export const gameService = {
 
   // Get current puzzle
   async getCurrentPuzzle(sessionId) {
-    // Get completed puzzles for this session
     const { data: completed } = await supabase
       .from('puzzle_progress')
       .select('puzzle_id')
@@ -131,23 +135,21 @@ export const gameService = {
 
     const completedIds = completed?.map(p => p.puzzle_id) || [];
 
-    // Get all puzzles ordered
     const { data: puzzles } = await supabase
       .from('puzzles')
       .select('*')
       .order('sequence_order', { ascending: true });
 
-    // Find first uncompleted puzzle
     const current = puzzles?.find(p => !completedIds.includes(p.id));
     if (!current) return null;
 
-    // Get time spent on this puzzle
+    // Progress may not exist yet for this puzzle - use maybeSingle
     const { data: progress } = await supabase
       .from('puzzle_progress')
       .select('*')
       .eq('game_session_id', sessionId)
       .eq('puzzle_id', current.id)
-      .single();
+      .maybeSingle();
 
     const timeSpent = progress
       ? Math.floor((Date.now() - new Date(progress.started_at).getTime()) / 1000)
@@ -173,15 +175,15 @@ export const gameService = {
 
   // Submit puzzle solution
   async submitSolution(sessionId, puzzleId, answer) {
-    const { data: puzzle } = await supabase
+    const { data: puzzle, error: puzzleError } = await supabase
       .from('puzzles')
       .select('solution_data, type, sequence_order')
       .eq('id', puzzleId)
       .single();
 
-    const solutionData = puzzle.solution_data;
-    const solution = solutionData.solution;
+    if (puzzleError || !puzzle) throw new Error('Puzzle no encontrado');
 
+    const solution = puzzle.solution_data?.solution;
     let isCorrect = false;
 
     if (Array.isArray(solution)) {
@@ -192,38 +194,50 @@ export const gameService = {
       isCorrect = solution === answer;
     }
 
-    // Update attempts
+    // Progress may not exist - use maybeSingle
     const { data: progress } = await supabase
       .from('puzzle_progress')
       .select('*')
       .eq('game_session_id', sessionId)
       .eq('puzzle_id', puzzleId)
-      .single();
+      .maybeSingle();
 
     if (progress) {
       await supabase.from('puzzle_progress').update({
         attempts: (progress.attempts || 0) + 1,
         ...(isCorrect ? { is_completed: true, completed_at: new Date().toISOString() } : {})
       }).eq('id', progress.id);
+    } else if (isCorrect) {
+      // Create progress record if it doesn't exist
+      await supabase.from('puzzle_progress').insert({
+        game_session_id: sessionId,
+        puzzle_id: puzzleId,
+        started_at: new Date().toISOString(),
+        completed_at: new Date().toISOString(),
+        is_completed: true,
+        attempts: 1,
+        hints_used: 0,
+        time_spent: 0
+      });
     }
 
     if (isCorrect) {
-      // Init next puzzle progress
+      // Init next puzzle progress (may not exist - use maybeSingle)
       const { data: nextPuzzle } = await supabase
         .from('puzzles')
         .select('id')
         .eq('sequence_order', puzzle.sequence_order + 1)
-        .single();
+        .maybeSingle();
 
       if (nextPuzzle) {
-        const existing = await supabase
+        const { data: existingProgress } = await supabase
           .from('puzzle_progress')
           .select('id')
           .eq('game_session_id', sessionId)
           .eq('puzzle_id', nextPuzzle.id)
-          .single();
+          .maybeSingle();
 
-        if (!existing.data) {
+        if (!existingProgress) {
           await supabase.from('puzzle_progress').insert({
             game_session_id: sessionId,
             puzzle_id: nextPuzzle.id,
@@ -260,7 +274,7 @@ export const gameService = {
       .select('started_at, hints_used')
       .eq('game_session_id', sessionId)
       .eq('puzzle_id', puzzleId)
-      .single();
+      .maybeSingle();
 
     if (!progress) return { available: false, hints_used: 0, time_on_puzzle: 0 };
 
@@ -279,7 +293,7 @@ export const gameService = {
       .select('hints_used')
       .eq('game_session_id', sessionId)
       .eq('puzzle_id', puzzleId)
-      .single();
+      .maybeSingle();
 
     if (progress) {
       await supabase.from('puzzle_progress').update({
