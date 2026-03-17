@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { decrementTimer, syncTimer } from '../../features/game/gameSlice';
+import { decrementTimer, syncSession } from '../../features/game/gameSlice';
 import useSoundEffects from '../../hooks/useSoundEffects';
 import '../../styles/animations.css';
 
@@ -20,16 +20,16 @@ const Timer = () => {
     return () => clearInterval(interval);
   }, [isActive, dispatch]);
 
-  // Sync with backend every 30 seconds
+  // Sync with backend every 30 seconds to correct drift
   useEffect(() => {
     if (!isActive) return;
 
     const syncInterval = setInterval(() => {
-      dispatch(syncTimer(timeRemaining));
+      dispatch(syncSession());
     }, 30000);
 
     return () => clearInterval(syncInterval);
-  }, [isActive, timeRemaining, dispatch]);
+  }, [isActive, dispatch]);
 
   // Play warning sound at 5 minutes
   useEffect(() => {

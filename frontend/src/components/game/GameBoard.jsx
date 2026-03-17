@@ -89,8 +89,10 @@ const GameBoard = () => {
     } else {
       // Hay sesión guardada, recuperarla y sincronizar tiempo
       dispatch(recoverSession());
-      // Sincronizar tiempo con el servidor
-      dispatch(syncSession());
+      // Sincronizar tiempo con el servidor inmediatamente
+      setTimeout(() => {
+        dispatch(syncSession());
+      }, 100);
     }
   }, [isAuthenticated, dispatch]);
 

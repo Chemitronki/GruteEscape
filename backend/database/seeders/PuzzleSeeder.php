@@ -114,20 +114,8 @@ class PuzzleSeeder extends Seeder
                 ]),
             ],
             [
-                'type' => 'cultist_code',
-                'sequence_order' => 9,
-                'title' => 'El Código del Culto',
-                'description' => 'Decodifica los mensajes interceptados usando análisis de frecuencia.',
-                'solution_data' => json_encode([
-                    'solution' => 'NECRONOMICON',
-                    'encrypted' => 'QHFURQRPLFRQ',
-                    'cipher_type' => 'caesar',
-                    'shift' => 3
-                ]),
-            ],
-            [
                 'type' => 'elder_sign',
-                'sequence_order' => 10,
+                'sequence_order' => 9,
                 'title' => 'El Signo de los Antiguos',
                 'description' => 'Traza el patrón geométrico complejo sin levantar el cursor.',
                 'solution_data' => json_encode([
@@ -140,6 +128,18 @@ class PuzzleSeeder extends Seeder
                     ],
                     'tolerance' => 20,
                     'max_time' => 60
+                ]),
+            ],
+            [
+                'type' => 'cultist_code',
+                'sequence_order' => 10,
+                'title' => 'El Código del Culto - La Prueba Final',
+                'description' => 'Decodifica el mensaje final del Necronomicón. Esta es tu última prueba antes de escapar.',
+                'solution_data' => json_encode([
+                    'solution' => 'NECRONOMICON',
+                    'encrypted' => 'QHFURQRPLFRQ',
+                    'cipher_type' => 'caesar',
+                    'shift' => 3
                 ]),
             ],
         ];
@@ -209,17 +209,17 @@ class PuzzleSeeder extends Seeder
                 ['puzzle_id' => 8, 'level' => 2, 'content' => 'El patrón comienza hacia arriba y termina a la derecha.'],
                 ['puzzle_id' => 8, 'level' => 3, 'content' => 'Secuencia: Arriba, Derecha, Abajo, Izquierda, Arriba, Arriba, Derecha.'],
             ],
-            // Puzzle 9: Cultist Code
+            // Puzzle 9: Elder Sign
             [
-                ['puzzle_id' => 9, 'level' => 1, 'content' => 'Es un cifrado César. Cada letra está desplazada.'],
-                ['puzzle_id' => 9, 'level' => 2, 'content' => 'El desplazamiento es de 3 posiciones hacia atrás.'],
-                ['puzzle_id' => 9, 'level' => 3, 'content' => 'La palabra es el nombre del libro maldito: NECRONOMICON.'],
+                ['puzzle_id' => 9, 'level' => 1, 'content' => 'Debes trazar el patrón sin levantar el cursor.'],
+                ['puzzle_id' => 9, 'level' => 2, 'content' => 'Comienza desde el punto superior y sigue las líneas.'],
+                ['puzzle_id' => 9, 'level' => 3, 'content' => 'Forma una estrella de cinco puntas, comenzando arriba.'],
             ],
-            // Puzzle 10: Elder Sign
+            // Puzzle 10: Cultist Code - Final Test
             [
-                ['puzzle_id' => 10, 'level' => 1, 'content' => 'Debes trazar el patrón sin levantar el cursor.'],
-                ['puzzle_id' => 10, 'level' => 2, 'content' => 'Comienza desde el punto superior y sigue las líneas.'],
-                ['puzzle_id' => 10, 'level' => 3, 'content' => 'Forma una estrella de cinco puntas, comenzando arriba.'],
+                ['puzzle_id' => 10, 'level' => 1, 'content' => 'Es un cifrado César. Cada letra está desplazada.'],
+                ['puzzle_id' => 10, 'level' => 2, 'content' => 'El desplazamiento es de 3 posiciones hacia atrás.'],
+                ['puzzle_id' => 10, 'level' => 3, 'content' => 'La palabra es el nombre del libro maldito: NECRONOMICON. Esta es tu prueba final.'],
             ],
         ];
 

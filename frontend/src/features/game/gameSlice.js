@@ -308,6 +308,7 @@ const gameSlice = createSlice({
       if (storedSession) {
         state.session = JSON.parse(storedSession);
         state.isActive = true;
+        // Don't set timeRemaining here - let syncSession handle it
       }
     },
     updateTimeRemaining: (state, action) => {

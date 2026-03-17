@@ -19,19 +19,22 @@ const ShadowReflection = ({ puzzleData, onSubmit, disabled }) => {
   const [isShowingPattern, setIsShowingPattern] = useState(true);
   const [submitted, setSubmitted] = useState(false);
   const [displayedStep, setDisplayedStep] = useState(0);
+  const [animatingIndex, setAnimatingIndex] = useState(-1);
 
   useEffect(() => {
-    // Show the pattern sequentially
+    // Show the pattern sequentially with longer delays
     if (isShowingPattern && displayedStep < patternLength) {
       const timer = setTimeout(() => {
+        setAnimatingIndex(displayedStep);
         setDisplayedStep(displayedStep + 1);
-      }, 2000); // 2 seconds per movement (1.5s animation + 0.5s pause)
+      }, 2500); // 2.5 seconds per movement
       return () => clearTimeout(timer);
     } else if (isShowingPattern && displayedStep >= patternLength) {
       // Pattern finished showing, hide it after a brief pause
       const timer = setTimeout(() => {
         setIsShowingPattern(false);
-      }, 1000);
+        setAnimatingIndex(-1);
+      }, 1500);
       return () => clearTimeout(timer);
     }
   }, [isShowingPattern, displayedStep, patternLength]);
@@ -60,6 +63,7 @@ const ShadowReflection = ({ puzzleData, onSubmit, disabled }) => {
     setDisplayedStep(0);
     setIsShowingPattern(true);
     setSubmitted(false);
+    setAnimatingIndex(-1);
   };
 
   const getPositionClass = (direction) => {
@@ -73,6 +77,23 @@ const ShadowReflection = ({ puzzleData, onSubmit, disabled }) => {
     }
   };
 
+  const getDirectionLabel = (direction) => {
+    switch (direction) {
+      case 'up': return '↑';
+      case 'down': return '↓';
+      case 'left': return '←';
+      case 'right': return '→';
+      case 'center': return '•';
+      default: return '?';
+    }
+  };
+
+  // Check if a direction is repeated
+  const isRepeated = (index) => {
+    if (index === 0) return false;
+    return userPattern[index] === userPattern[index - 1];
+  };
+
   return (
     <div className="shadow-reflection">
       <div className="reflection-instructions">
@@ -83,12 +104,11 @@ const ShadowReflection = ({ puzzleData, onSubmit, disabled }) => {
 
       <div className="reflection-display">
         <div className="shadow-side">
-          <h4>Sombra</h4>
+          <h4>Patrón de Sombra</h4>
           <div className="shadow-grid">
             {isShowingPattern && displayedStep > 0 && (
               <div
-                className={`shadow-position ${getPositionClass(targetPattern[displayedStep - 1])} active`}
-                style={{ animationDelay: '0s' }}
+                className={`shadow-position ${getPositionClass(targetPattern[displayedStep - 1])} active animating`}
               >
                 <div className="shadow-figure">👤</div>
               </div>
@@ -99,6 +119,24 @@ const ShadowReflection = ({ puzzleData, onSubmit, disabled }) => {
               </div>
             )}
           </div>
+          
+          {/* Show pattern sequence - only while showing pattern */}
+          {isShowingPattern && (
+            <div className="pattern-sequence">
+              <div className="sequence-label">Secuencia:</div>
+              <div className="sequence-display">
+                {targetPattern.map((direction, index) => (
+                  <div 
+                    key={index} 
+                    className={`sequence-item ${index < displayedStep ? 'shown' : 'hidden'}`}
+                    title={direction}
+                  >
+                    {getDirectionLabel(direction)}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="mirror-line"></div>
@@ -109,11 +147,27 @@ const ShadowReflection = ({ puzzleData, onSubmit, disabled }) => {
             {userPattern.map((direction, index) => (
               <div
                 key={index}
-                className={`player-position ${getPositionClass(direction)}`}
+                className={`player-position ${getPositionClass(direction)} ${isRepeated(index) ? 'repeated' : ''}`}
               >
                 <div className="player-figure">🧍</div>
               </div>
             ))}
+          </div>
+          
+          {/* Show user pattern sequence */}
+          <div className="pattern-sequence">
+            <div className="sequence-label">Tu Secuencia:</div>
+            <div className="sequence-display">
+              {userPattern.map((direction, index) => (
+                <div 
+                  key={index} 
+                  className={`sequence-item user-item ${isRepeated(index) ? 'repeated-item' : ''}`}
+                  title={direction}
+                >
+                  {getDirectionLabel(direction)}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
